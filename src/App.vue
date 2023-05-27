@@ -1,30 +1,68 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+
+import { computed } from '@vue/reactivity';
+import { routes } from './plugins/router';
+
+const appTitle = computed(() => import.meta.env.VITE_APP_TITLE);
+
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <v-app theme="dark">
+    <v-app-bar app :title="appTitle">
+      <div class="nav">
+        <router-link v-for="route in routes" :key="route.path" :to="route.path">
+          {{ route.meta.title }}
+        </router-link>
+      </div>
+    </v-app-bar>
+
+    <v-main class="main">
+      <router-view v-slot="{ Component, route }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" :key="route.path" />
+        </transition>
+      </router-view>
+    </v-main>
+  </v-app>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<style lang="scss">
+
+
+main {
+  text-align: center;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+a {
+  color: white;
+  text-decoration: none;
+  padding: .5rem;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    text-decoration: underline;
+    background-color: white;
+    border-radius: .2rem;
+    color: black;
+  }
+
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+.nav {
+  display: flex;
+  margin-right: 1rem;
+  gap: 1rem;
+}
+
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
